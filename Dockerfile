@@ -1,30 +1,15 @@
-# Use an official Node.js image as base
-FROM node:18-alpine
+# Dockerfile
+FROM node:20
 
-# Set working directory
 WORKDIR /app
 
-# Copy package files and install dependencies
-COPY package.json package-lock.json ./
+COPY package*.json ./
 RUN npm install
 
-# Copy all other source code
 COPY . .
 
-# Build the React app for production
 RUN npm run build
 
-# Use an official Nginx image to serve the build
-FROM nginx:alpine
+EXPOSE 3000
 
-# Copy the build output to Nginx's public directory
-COPY --from=0 /app/build /usr/share/nginx/html
-
-# Copy custom Nginx config if needed (optional)
-# COPY nginx.conf /etc/nginx/nginx.conf
-
-# Expose port
-EXPOSE 80
-
-# Start Nginx
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["npx", "serve", "-s", "build", "-l", "3000"]
