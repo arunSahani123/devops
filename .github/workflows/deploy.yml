@@ -1,4 +1,4 @@
-name: React CI/CD
+name: React Expense Tracker CI/CD
 
 on:
   push:
@@ -11,22 +11,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Clone repository
+      - name: 📥 Checkout code
         uses: actions/checkout@v3
 
-      - name: ⚙️ Setup Node.js
+      - name: ⚙️ Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 20
 
       - name: 📦 Install dependencies
         run: npm install
 
-      - name: 🏗️ Build the app
-  run: |
-    export NODE_OPTIONS=--openssl-legacy-provider
-    npm run build
-
+      - name: 🛠️ Build project (fix OpenSSL issue for Node 20+)
+        run: |
+          export NODE_OPTIONS=--openssl-legacy-provider
+          npm run build
 
       - name: 🐳 Docker build
         run: docker build -t react-expense-tracker .
+
+      # Optional: Push Docker image to Docker Hub (uncomment below if needed)
+      # - name: 🔐 Login to Docker Hub
+      #   run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      # - name: 📤 Push image to Docker Hub
+      #   run: docker push your-dockerhub-username/react-expense-tracker
